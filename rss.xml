@@ -1,15 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[WangXi's RSS Feed]]></title><description><![CDATA[Thinking in X]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Fri, 06 Sep 2019 07:50:42 GMT</lastBuildDate><item><title><![CDATA[From jekyll to gatsby]]></title><description><![CDATA[While hosting personal site on github pages, jekyll is fine.
-But nowadays static site generator like  is more popular which
-is based on the…]]></description><link>https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby/</link><guid isPermaLink="false">https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby/</guid><pubDate>Sat, 31 Aug 2019 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;While hosting personal site on github pages, jekyll is fine.
-But nowadays static site generator like &lt;code class=&quot;language-text&quot;&gt;GatsbyJs&lt;/code&gt; is more popular which
-is based on the fantastic &lt;code class=&quot;language-text&quot;&gt;React&lt;/code&gt;, also my favorite language is &lt;code class=&quot;language-text&quot;&gt;javascript&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;So shifting from jekyll to gatsby seems a win-win step.&lt;/p&gt;
-&lt;p&gt;Happy blogging :-)&lt;/p&gt;
-&lt;h4&gt;Reference&lt;/h4&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[WangXi's RSS Feed]]></title><description><![CDATA[Thinking in X]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 06 Apr 2020 15:01:57 GMT</lastBuildDate><item><title><![CDATA[Mac 10.15 安装 libvips]]></title><description><![CDATA[gatsby 的图片处理库很方便，但是 sharp 依赖 c++编写的 。
+当 Mac 升级到 catalina(10.15), 安装时一直失败，当尝试源码编译，会出现依赖的错误。
+还有在 catalina…]]></description><link>https://iwisunny.github.io/2020-04-06/mac-catalina-install-libvips/</link><guid isPermaLink="false">https://iwisunny.github.io/2020-04-06/mac-catalina-install-libvips/</guid><pubDate>Mon, 06 Apr 2020 08:06:46 GMT</pubDate><content:encoded>&lt;p&gt;gatsby 的图片处理库&lt;code class=&quot;language-text&quot;&gt;sharp&lt;/code&gt;很方便，但是 sharp 依赖 c++编写的 &lt;code class=&quot;language-text&quot;&gt;libvips&lt;/code&gt;。
+当 Mac 升级到 catalina(10.15), &lt;code class=&quot;language-text&quot;&gt;brew&lt;/code&gt;安装时一直失败，当尝试源码编译，会出现&lt;code class=&quot;language-text&quot;&gt;tiff&lt;/code&gt;依赖的错误。
+还有&lt;code class=&quot;language-text&quot;&gt;zlib&lt;/code&gt;在 catalina 默认的 &lt;code class=&quot;language-text&quot;&gt;pkg-config&lt;/code&gt;的配置&lt;code class=&quot;language-text&quot;&gt;zlib.pc&lt;/code&gt;错误。针对我遇到的情形，解决方式如下。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;// 从github 下载最新的gz包，vips-8.9.1.tar.gz
+
+tar xf vips-8.9.1.tar.gz
+cd vips-8.9.1
+
+./configuration --with-jpeg --with-png --without-tiff
+
+make
+
+sudo make install
+
+rm -rf node_modules
+
+npm i --unsafe-perm --build-from-source --verbose&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;hr&gt;
+&lt;p&gt;改进之处&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/&quot;&gt;GatsbyJs&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;How to Deploy a GatsbyJS Blog on GitHub Pages as a User Site&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google搜索算子]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2015-10-26-google-advanced-operators/</link><guid isPermaLink="false">https://iwisunny.github.io/2015-10-26-google-advanced-operators/</guid><pubDate>Mon, 26 Oct 2015 00:12:03 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
+&lt;li&gt;在 markdown 内引入 &lt;code class=&quot;language-text&quot;&gt;png&lt;/code&gt;图片，gatsby 会编译出错 (可能是 libvips 编译的参数不对， 或者&lt;code class=&quot;language-text&quot;&gt;gatsby-plugin-sharp&lt;/code&gt;的 bug)&lt;/li&gt;
+&lt;li&gt;用 yarn 安装可以 resolution 到 &lt;code class=&quot;language-text&quot;&gt;sharp: 0.24&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考文档&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://sharp.pixelplumbing.com/install&quot;&gt;https://sharp.pixelplumbing.com/install&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&quot;&gt;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/gatsbyjs/gatsby/issues/21032&quot;&gt;https://github.com/gatsbyjs/gatsby/issues/21032&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google 搜索运算符]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2019-10-26-google-advanced-operators/</link><guid isPermaLink="false">https://iwisunny.github.io/2019-10-26-google-advanced-operators/</guid><pubDate>Sat, 26 Oct 2019 00:12:03 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
 &lt;p&gt;If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the anchor text on links to the page. For example, [ allinanchor: best museums sydney ] will return only pages in which the anchor text on links to the pages contain the words “best,” “museums,” and “sydney.”&lt;/p&gt;
 &lt;p&gt;Anchor text is the text on a page that is linked to another web page or a different place on the current page. When you click on anchor text, you will be taken to the page or place on the page to which it is linked. When using allinanchor: in your query, do not include any other search operators. The functionality of allinanchor: is also available through the Advanced Web Search page, under Occurrences.&lt;/p&gt;
 &lt;h2&gt;allintext:&lt;/h2&gt;
@@ -90,123 +109,15 @@ is based on the fantastic &lt;code class=&quot;language-text&quot;&gt;React&lt;/
 &lt;p&gt;You can also restrict your results to a site or domain through the domains selector on the Advanced Search page.&lt;/p&gt;
 &lt;h2&gt;source:&lt;/h2&gt;
 &lt;p&gt;If you include source: in your query, Google News will restrict your search to articles from the news source with the ID you specify. For example, [ election source:new&lt;em&gt;york&lt;/em&gt;times ] will return articles with the word “election” that appear in the New York Times.&lt;/p&gt;
-&lt;p&gt;To find a news source ID, enter a query that includes a term and the name of the publication you’re seeking. You can also specify the publication name in the “news source” field in the Advanced News Search form. You’ll find the news source ID in the query box, following the source: search operator. For example, let’s say you enter the publication name Ha’aretz in the News Source box, then you click the Google Search button. The results page appears, and its search box contains [ peace source:ha&lt;em&gt;aretz__subscription&lt;/em&gt; ]. This means that the news source ID is ha&lt;em&gt;aretz__subscription&lt;/em&gt;. This query will only return articles that include the word “peace” from the Israeli newspaper Ha’aretz.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[life is a state of mind]]></title><description><![CDATA[The subject of this article you are about to read reveals a crucial secret of your life.
-It concerns a subject that is liable to make…]]></description><link>https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind/</link><guid isPermaLink="false">https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind/</guid><pubDate>Sun, 25 Oct 2015 00:12:03 GMT</pubDate><content:encoded>&lt;blockquote&gt;
-&lt;p&gt;The subject of this article you are about to read reveals a crucial secret of your life.
-It concerns a subject that is liable to make fundamental changes in your outlook on the material world.
-The content of this article is not just a different approach, or a philosophical thought.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;一个人从出生就受到条件的制约，因为人居住的环境完全是物质性的。人在这种外界条件的影响下逐渐长大，所有的想法
-都是在物质世界的基础上形成。我们从外界获得的所有信息来源于我们的 5 种感官(Sensors)，视觉、听觉、嗅觉、味觉、触觉
-形成了我们的世界。人从出生就依赖这五种感官，这是我们感知世界的唯一途径。当超越感官，在思维模型上考察
-一个和以往认识完全不同的世界，这个世界是真是假，who knows and who cares ?&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;人是一个映像(Image)，经历的每一件事都是一个短暂的感觉，宇宙是一个影子(Shadow)。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3&gt;眼睛是如何看到这个世界的？&lt;/h3&gt;
-&lt;p&gt;眼睛看见一个事物是一个逐步的过程，首先光线的光量子从物体射向我们的眼睛，穿过眼角膜，最后在眼睛后面的视网膜聚集。
-光信号转化成电信号，从视神经元传到大脑后部，最终在大脑后部这个几立方厘米的区域形成图像。我们一生中看到的所有事物，
-经历的所有事情都在这个狭小黑暗的区域形成图像。“相由心生”从这个意义上讲佛学和科学是汇合的。当我们说我们看到了东西，
-其实是电信号传送到了大脑后沿的成像区域，也就是大脑接收到了特定的电信号，而大脑是完全隔离光线的，大脑不可能和光线发生
-联系，换句话说光线永远照不到大脑内，大脑只是处理外界光线产生的电信号就形成了我们看到的五彩缤纷的世界。&lt;/p&gt;
-&lt;p&gt;与视觉类似，其它感官的形成也同样是外界的刺激给大脑反馈的电信号。在我们的一生中，从大脑中起源的一切并不是真实的外界，
-而只是大脑复制的映像，我们误认为大脑中的映像是外界存在的实际物质。&lt;/p&gt;
-&lt;h3&gt;大脑中的外部世界&lt;/h3&gt;
-&lt;p&gt;上面的分析指出了一个不可否认的推论，我们在世界或者说宇宙中，看到、摸到、听到，从而觉得是物质的东西，其实只是大脑中的
-电信号。如果外部物质反射的光线被阻断或者光线刺激大脑的电信号被阻断，我们就看不到外部的物质了，显然，我们看见的世界只是
-大脑对电信号的解读。天文望远镜里看到的宇宙星空，不是说那些物体有几百万光年远，其实就在我们的大脑中。当你坐在屋子里看电视，
-你的感觉和身体让你觉得自己在屋子里，其实是屋子和你的身体在你的大脑里，只是你大脑里的一个映像。现在回到我们前面一直提到的
-“外界”这个词，其实外界是我们大脑中的外界，我们根本无法跳出大脑里的世界，既然我们不能到达外面真实的世界，我们又凭什么
-确定外界真实存在？？显然，我们无法确定外界是否存在。我们居住的世界只是大脑里感觉的世界，（a state of our minds）。可以做一个小小的
-思维实验，假设把大脑和身体分离，大脑分离出来继续维持生理机能，在大脑外面连接一个能记录信息的电脑（或者示波器），将电脑记录的数据全部
-转换为电子脉冲刻录到光盘，然后反过来将光盘记录的信息用电脑读出转换成电信号再输入给大脑，你想大脑里会发生什么？
-大脑会读出这些电信号，产生前面看到的，听到的，摸到的等等物体的感觉，过去就被重现了。只要电脑不停地给大脑施加电刺激，这个大脑中虚幻的世界
-就一直持续。我们只是意识（life is a state of minds）,我们很容易被感觉欺骗，认为有一些真实存在的东西，比如梦里的东西？。。&lt;/p&gt;
-&lt;h3&gt;梦里的世界&lt;/h3&gt;
-&lt;p&gt;在我们平常的世界，我们能有看到，听到，摸到物体的感觉，在梦里我们也有和真实世界一样的感觉，但是梦里，我们没有手，也没有眼睛，我们怎么来的这种感觉，
-梦里也没有任何可以让我们摸和看的“真实”的物体，认为我们在梦中感到的东西是真实的，本身就是一种错觉。一个人在床上沉睡，梦中自己在一个不同的世界，
-也许在梦中的世界他在上天入地，做着非同寻常的事情，但事实上他就在床上一步也没有离开。如果我们能在梦中平安的生活着，
-只有在梦醒的时候，我们才会意识到是做了一场梦，同样的道理也适用于我们正生活的这个被我们认为真实存在的世界。当我们从一场梦中醒来，没有理由不相信我们
-仍然处在另一个更长的梦中，这都是大脑给我们营造的梦境，这个更长的梦我们叫它真实的世界。我们之所以认为梦是幻境，现在的世界是真的，只是我们的惯性思维。
-我们在地球上的生活可能不是清醒的，我们认为现在是在实际生活着，认为似乎刚刚从梦中醒来。&lt;/p&gt;
-&lt;h3&gt;谁是自我&lt;/h3&gt;
-&lt;p&gt;所有的事实和分析都指向一个更重要的问题，如果我们生活的所有情形都只是固有的感知，那我们的大脑是什么？我们的意识是什么？如果意识是由物质组成，就像我们的身体
-是由物质组成一样，那意识本身也只是一个被感知的对象，就像外界的物体一样。如果意识只是感觉，是由视觉和触觉等感官创造的，那么到底是什么接收到了这些感觉？
-是谁看到了，谁触摸到了，闻到了，感觉到了。。？是谁在思考，推断，和感觉到“我是我”？我们这个年代一些重要领域的思考也最终指向了这个问题。
-The ghost in the machine, the small man in the small man ，“我”在哪里？谁在用我的“意识”？谁意识到了“意识”本身？我们在寻找谁看见了这一切。
-实际上， 形而上存在一个东西能够看到听到，那就是灵魂(Soul)，我们所认为的现实世界，是灵魂看见听见的集合。就像梦中我们的身体和感知的世界不是真实存在的一样，
-我们身处的宇宙也不是真实存在的，也不是物理的实在，唯一真实存在的，是灵魂。事物只是灵魂的感知，物理，化学和生物的法则都指向一个结论---人的存在是幻觉。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[夜空为什么是黑色的?]]></title><description><![CDATA[…]]></description><link>https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark/</link><guid isPermaLink="false">https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark/</guid><pubDate>Thu, 09 Apr 2015 00:12:03 GMT</pubDate><content:encoded>&lt;blockquote&gt;
-&lt;p&gt;夜空总给我一种神秘的感觉，似乎要告诉我什么，像一位睿智的老者、默默的友人……
-当你仰望它时内心有莫名的平静……
-宇宙中的问题没有简单与复杂的区分，简单与复杂这些形容词，都掺杂了人的主观情感……&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;这个生活中司空见惯的现象却蕴涵着深刻的道理(&lt;code class=&quot;language-text&quot;&gt;关于奥伯斯佯谬&lt;/code&gt;)。不动脑子的解释就是：夜晚地球的一面背对着太阳，因为没有阳光照射，所以是黑色的。&lt;/p&gt;
-&lt;p&gt;其实回答的人连问题都没有理解清楚就开始抢答了，我问的是夜空为什么是黑色的，记住是“夜空”，是那片星空，而不是你下意识说出的地球表面。
-也许你要反驳了，地球将太阳光挡住了一部分，而挡住的那部分视线上的夜空因为没有太阳光照射而呈现黑色。好了，反驳也很简单，考虑一下太阳和地球的体积，
-一个太阳大概能装下 160 万个地球，由于太阳和地球距离很远（一个天文单位），所以太阳的视直径很小，你依然觉得地球挡住了很大一部分太阳光？。&lt;/p&gt;
-&lt;p&gt;用一下隔离法吧，假设你将太阳这个宇宙中的小不点从宇宙天幕上移开了，再来对自己提问（假设你还在地球上活着）--- 为什么夜空是黑色的？&lt;/p&gt;
-&lt;p&gt;到这里故事似乎变的有点趣味了，有人解释了，夜空之所以是黑色的是因为那里没有星星（恒星）。这样的回答无法令人满意，宇宙中存在无限多个近均匀分布的恒星，
-我们的视线无论从哪个方向看去都能碰到恒星，类似各向同性的 3K 宇宙微波背景辐射，因而夜空应该到处是明亮的呀。还有人解释说星际空间存在大量的气体和尘埃，
-遥远的星光被尘埃吸收导致光度减弱，因而夜空是黑色的。嗯，这么解释稍微有点靠谱，但是仔细想想也是行不通的，因为宇宙中恒星的总光度是趋于无限大的，
-星际物质吸收那么多能量必然自身也会变热而发光……这些看似有道理的解释却都得出了与事实不相符的结论。&lt;/p&gt;
-&lt;p&gt;宇宙的基本要素是时间和空间，有时当你闭上双眼，是否会小声猜测这无法形容的黑暗是否就是宇宙诞生之初的场景，于是人类的思维就逆向追寻时间和空间的脚步，
-而宇宙大爆炸理论就是这种思维下的产物。难道“夜空为什么是黑色的”也与大爆炸扯上了联系？细细想来不是扯上了联系而是自然而然的联系……&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;1915 年，斯里弗发现大多数河外星系的光谱线都偏向正常位置向红色端移动，这就是“光谱红移”现象。
-根据多普勒效应，光谱红移告诉我们大多数河外星系在远离我们而去。
-1926 年，哈勃进一步研究了 30 个河外星系的红移得出了哈勃定律：V=H*D 星系正在离开我们向四面八方远去，星系的距离与红移量的大小成正比。&lt;br&gt;
-那些 100 亿光年远的类星体，远离我们的速度甚至达到了 0.8 倍光速。&lt;br&gt;
-红移的大小表征了河外星系远离我们的退行速度。哈勃定律说明星系越远它们的退行速度越高，也就是说我们观测的宇宙正在膨胀！&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;有了上述的两个重要观测再来分析夜空是黑色的本质，由于我们观测的宇宙在膨胀，那么恒星发出的光会因为红移（光谱线向红色端移动）而使能量减弱，
-星系越远红移越大，导致光线能量越低光度越暗。一些遥远的星系发出的光到达观测者的眼睛时能量已经衰减为零，所以我们观测到的夜空是黑色的。&lt;/p&gt;
-&lt;p&gt;这时候有人要欢呼了，好像这个问题已经解决了，不然！回顾我们的分析过程是在假设宇宙大爆炸成立的情况下作出的，有人会这么推理，因为夜空是黑色的这一现象
-是不争的事实，而如今几乎所有理论都无法很好的解释这个问题，唯独大爆炸理论能比较圆满的解释它，那么我们是否能作出这种推论：大爆炸理论是正确的。&lt;/p&gt;
-&lt;p&gt;答案显然不行，这不是天文学上的苛刻，这样解释就陷入了循环论证的逻辑怪圈中。正确的态度是：夜空黑暗现象是宇宙大爆炸留下的蛛丝马迹，或许大爆炸理论是正确的
-，又或许还有另一个更加正确的理论未被人类发现。就好像在解释大尺度空间的引力问题上，相对论是比牛顿力学更正确的理论，但你依然无法说明相对论就是正确的，
-虽然水星近日点反常进动和强引力场光线弯曲等等现象佐证了相对论的引力理论，同样 3K 微波背景辐射等现象也佐证了大爆炸理论，但是要推翻一个论断，只需要一个反例
-就够了。于是很多论断就成了既无法被证明正确，也无法被证明错误，游离在三界之外，成了一连串的哥德尔命题，而哥德尔命题又让人联想起了埃舍尔在房间画的那些奇
-特的图画，那些图画又让人听到了巴赫那动人的管风琴曲，像朱自清闻到荷塘的花香，仿佛听到远处高楼上渺远的歌声。宇宙就这么悠然自得的演奏着自己气势恢宏的交响曲.&lt;/p&gt;
-&lt;p&gt;当然，站在量子力学那诡异的视角里，“夜空为什么是黑色的”可以这样解析，我们的研究对象是夜空，外在表征是黑色，而人类奇怪于这种黑色与夜空之间的关联，
-便有此一问“为什么？”。因为按照推断夜空不应该是黑色的啊，可以说成是亮白色的或者其他什么颜色的，---- 这又与我们观测的夜空是黑色的不一样？。。如此一来
-，要么是眼睛欺骗了我们，要么是现有的理论有缺陷。&lt;/p&gt;
-&lt;p&gt;遵循第一条探索，假如是我们的眼睛欺骗了我们。就是作为观测者的人自身的因素导致的特定状况下的结论。这条路走下去就会得出“人择原理”：因为人在研究宇宙，
-所以宇宙的一个重要性质就是允许人能存在，人的存在与物理常数有关。例如只要中子和质子的质量稍稍不同于现在的数值，就将有上百种原子核是不稳定的，也将导致
-分子形成和演化的根基，也就不会有人存在。就如同你要问为什么宇宙年龄大于 100 亿年，根据人择原理，人是碳基生命，碳从恒星内部核反应产生，而恒星中的碳必须
-经过超新星爆发才能弥散到宇宙空间，再来构成行星的原料，上述过程至少要 100 亿年，因此宇宙年龄必须在 100 亿年以上，否则不会有人存在，也就不会有人来提出
-这个问题，哈哈，好唯心的说法啊，我不唯心，也不唯物，既是粒子又是波，简直就让人难以接受，我觉得唯相比较好，一切都是大脑中的一个印象（Image）。&lt;/p&gt;
-&lt;p&gt;再回到“夜空是黑色的”问题上，可以存在许多有特定外在表现的宇宙 ----平行宇宙，可能在那些宇宙上夜空是红色的，黄色的，蓝色的，但是由于人的存在，
-允许人类来观测和思考宇宙的话，某些平行宇宙就不应该存在（否则就不会有人存在），是人在观测宇宙，所以物理常数和宇宙学参数必须取合适的数值才能演化出人，
-而在这些宇宙参数的取值下，呈现在人面前的宇宙夜空就是黑色的。&lt;/p&gt;
-&lt;p&gt;遵循第二条探索，认为是现有理论不够完善。在解释大尺度空间的均匀性和宇宙结构方面没有足够深入，就如同黑洞，类星体，暗物质这些神秘的宇宙天体一样，夜空也可
-以被看成一个天体，只是人类的观测能力有限，让这些在未来也许放在小学教科书里的内容在我们的时代却是未解之谜。我们这个时代一些重大的发现，量子宇宙学，
-弦论，虚拟现实，人工智能，都是人类在反观自照：我们从何而来，我们要到哪里去，时间，空间，存在与虚无 永远在人类灵魂深处自觉不自觉的发问……&lt;/p&gt;
-&lt;p&gt;夜空为什么是黑色的？……我们还是没有弄明白她，就像你永远走不进另一个人的内心，我们都是孤独的，正因为我们都是孤独的，所以我们都不孤独。
-其实不是这个问题需要这么啰嗦，需要这么小题大作，它确认很简单，简单得人们都不屑去理会它，但几百年以来有很多睿智的科学家都思索过它，但都无果而终。
-在如今的社会人们也有去追问这些问题的，只是对物质的强烈追求和追求到手之后内心无比的空虚和失落感，使得他们根本无法靠近这类问题散发出的效应场。&lt;br&gt;
-思考这些问题是宇宙赋予人类的特权，夜空为什么是黑色的 --- 是宇宙在人类面前掀起的神秘面纱的一角，引领人类的特有的思维去认识空间、时间和存在……
-夜空这位智者又在黑暗中偷偷笑了，也许是和人类它的孩子们玩的一个小游戏吧……就好像爷爷想逗逗他可爱的孙子出了一道算术题，看着孩子认真地做着题目，
-他也会心一笑，然后捋捋胡须睡觉去了……&lt;/p&gt;</content:encoded></item><item><title><![CDATA[提升自我的方法]]></title><description><![CDATA[每天学习。 学习新语言。 打造你的灵感空间。 战胜你的恐惧。 升级你的技能。 给未来的自己写一封信。 承认自己的缺点。 立即行动。 向佩服的人学习。 减少在社交软件上的时间。 培养一个新习惯。 让过去的过去。 帮助他人。 好好休息。 多多反省。 ...]]></description><link>https://iwisunny.github.io/2014-04-06-self-improve-methods/</link><guid isPermaLink="false">https://iwisunny.github.io/2014-04-06-self-improve-methods/</guid><pubDate>Sun, 06 Apr 2014 00:12:03 GMT</pubDate><content:encoded>&lt;ol&gt;
-&lt;li&gt;每天学习。&lt;/li&gt;
-&lt;li&gt;学习新语言。&lt;/li&gt;
-&lt;li&gt;打造你的灵感空间。&lt;/li&gt;
-&lt;li&gt;战胜你的恐惧。&lt;/li&gt;
-&lt;li&gt;升级你的技能。&lt;/li&gt;
-&lt;li&gt;给未来的自己写一封信。&lt;/li&gt;
-&lt;li&gt;承认自己的缺点。&lt;/li&gt;
-&lt;li&gt;立即行动。&lt;/li&gt;
-&lt;li&gt;向佩服的人学习。&lt;/li&gt;
-&lt;li&gt;减少在社交软件上的时间。&lt;/li&gt;
-&lt;li&gt;培养一个新习惯。&lt;/li&gt;
-&lt;li&gt;让过去的过去。&lt;/li&gt;
-&lt;li&gt;帮助他人。&lt;/li&gt;
-&lt;li&gt;好好休息。&lt;/li&gt;
-&lt;li&gt;多多反省。&lt;br&gt;
-...&lt;/li&gt;
-&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[学习过程及方法]]></title><description><![CDATA[循序渐进，打好基础，由易到难，量力而行。 熟读精思，心到、眼到、口到。 自求自得，主动消化吸收。 博约结合，广博与精研结合，广泛阅读，精读。 知行统一，从实践中学，学以致用。]]></description><link>https://iwisunny.github.io/2014-01-08-learning-process/</link><guid isPermaLink="false">https://iwisunny.github.io/2014-01-08-learning-process/</guid><pubDate>Wed, 08 Jan 2014 00:12:03 GMT</pubDate><content:encoded>&lt;ol&gt;
-&lt;li&gt;循序渐进，打好基础，由易到难，量力而行。&lt;/li&gt;
-&lt;li&gt;熟读精思，心到、眼到、口到。&lt;/li&gt;
-&lt;li&gt;自求自得，主动消化吸收。&lt;/li&gt;
-&lt;li&gt;博约结合，广博与精研结合，广泛阅读，精读。&lt;/li&gt;
-&lt;li&gt;知行统一，从实践中学，学以致用。&lt;/li&gt;
-&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[Day one]]></title><description><![CDATA[Hello world :-p]]></description><link>https://iwisunny.github.io/2013-07-20-day-one/</link><guid isPermaLink="false">https://iwisunny.github.io/2013-07-20-day-one/</guid><pubDate>Sat, 20 Jul 2013 00:12:03 GMT</pubDate><content:encoded>&lt;p&gt;Hello world :-p&lt;/p&gt;</content:encoded></item></channel></rss>
+&lt;p&gt;To find a news source ID, enter a query that includes a term and the name of the publication you’re seeking. You can also specify the publication name in the “news source” field in the Advanced News Search form. You’ll find the news source ID in the query box, following the source: search operator. For example, let’s say you enter the publication name Ha’aretz in the News Source box, then you click the Google Search button. The results page appears, and its search box contains [ peace source:ha&lt;em&gt;aretz__subscription&lt;/em&gt; ]. This means that the news source ID is ha&lt;em&gt;aretz__subscription&lt;/em&gt;. This query will only return articles that include the word “peace” from the Israeli newspaper Ha’aretz.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[From jekyll to gatsby]]></title><description><![CDATA[While hosting personal site on github pages, jekyll is fine.
+But nowadays static site generator like  is more popular which
+is based on the…]]></description><link>https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby/</link><guid isPermaLink="false">https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby/</guid><pubDate>Sat, 31 Aug 2019 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;While hosting personal site on github pages, jekyll is fine.
+But nowadays static site generator like &lt;code class=&quot;language-text&quot;&gt;GatsbyJs&lt;/code&gt; is more popular which
+is based on the fantastic &lt;code class=&quot;language-text&quot;&gt;React&lt;/code&gt;, also my favorite language is &lt;code class=&quot;language-text&quot;&gt;javascript&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So shifting from jekyll to gatsby seems a win-win step.&lt;/p&gt;
+&lt;p&gt;Happy blogging :-)&lt;/p&gt;
+&lt;h4&gt;Reference&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/&quot;&gt;GatsbyJs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;How to Deploy a GatsbyJS Blog on GitHub Pages as a User Site&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item></channel></rss>
