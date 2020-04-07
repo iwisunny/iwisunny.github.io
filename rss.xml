@@ -1,4 +1,102 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[WangXi's RSS Feed]]></title><description><![CDATA[Thinking in X]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 07 Apr 2020 02:53:20 GMT</lastBuildDate><item><title><![CDATA[Mac 10.15 安装 libvips]]></title><description><![CDATA[gatsby 的图片处理库很方便，但是 sharp 依赖 c++编写的 。
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[WangXi's RSS Feed]]></title><description><![CDATA[Thinking in X]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 07 Apr 2020 03:58:19 GMT</lastBuildDate><item><title><![CDATA[npmrc常用配置]]></title><description><![CDATA[在平时的 web 开发中，常用的一些 npmrc 配置 在项目根目录创建 文件，加上如下内容]]></description><link>https://iwisunny.github.io/2020-04-07/note-about-npmrc</link><guid isPermaLink="false">https://iwisunny.github.io/2020-04-07/note-about-npmrc</guid><pubDate>Tue, 07 Apr 2020 10:06:46 GMT</pubDate><content:encoded>&lt;p&gt;在平时的 web 开发中，常用的一些 npmrc 配置&lt;/p&gt;
+&lt;p&gt;在项目根目录创建 &lt;code class=&quot;language-text&quot;&gt;.npmrc&lt;/code&gt;文件，加上如下内容&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;// 切换到国内的npm源
+&lt;span class=&quot;token assign-left variable&quot;&gt;registry&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;https://registry.npm.taobao.org
+
+// 如果平时喜欢yarn，不想生成npm的package-lock
+package-lock&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;false
+
+// 切换node-sass的下载镜像
+sass-binary-site&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;https://npm.taobao.org/mirrors/node-sass
+
+// 添加私有仓库，便于安装私有部署的scope package
+@scope:registry&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;http://172.16.0.60:xxxx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[django webpack hot reload]]></title><description><![CDATA[1. 设置后端环境 2. 设置 django 的 settings.py 3. 设置 webpack (开发环境) 4. django 模板 实际项目中的演示： django webpack热加载]]></description><link>https://iwisunny.github.io/2020-04-07/django-webpack-hot-reload</link><guid isPermaLink="false">https://iwisunny.github.io/2020-04-07/django-webpack-hot-reload</guid><pubDate>Tue, 07 Apr 2020 08:06:46 GMT</pubDate><content:encoded>&lt;h2&gt;1. 设置后端环境&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# init python virtrual env&lt;/span&gt;
+pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; virtualenv
+virtualenv venv
+&lt;span class=&quot;token builtin class-name&quot;&gt;source&lt;/span&gt; ./venv/bin/activate
+
+pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; django-webpack-loader&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;2. 设置 django 的 settings.py&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;WEBPACK_LOADER &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&apos;DEFAULT&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&apos;CACHE&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; not DEBUG,
+        &lt;span class=&quot;token string&quot;&gt;&apos;BUNDLE_DIR_NAME&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;dist/&apos;&lt;/span&gt;, &lt;span class=&quot;token comment&quot;&gt;# must end with slash&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&apos;STATS_FILE&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; os.path.join&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BASE_DIR, &lt;span class=&quot;token string&quot;&gt;&apos;static/dist/webpack-stats.json&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;,
+        &lt;span class=&quot;token string&quot;&gt;&apos;POLL_INTERVAL&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0.1&lt;/span&gt;,
+        &lt;span class=&quot;token string&quot;&gt;&apos;TIMEOUT&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; None,
+        &lt;span class=&quot;token string&quot;&gt;&apos;IGNORE&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;.+\.hot-update.js&apos;&lt;/span&gt;, &lt;span class=&quot;token string&quot;&gt;&apos;.+\.map&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;3. 设置 webpack (开发环境)&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;const path &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; require&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;path&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+const webpackNotifier &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; require&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;webpack-notifier&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+const ManifestPlugin &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; require&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;webpack-manifest-plugin&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+const BundleTracker &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; require&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;webpack-bundle-tracker&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+const devServerPort &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; process.env.DEV_SERVER_PORT &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;9000&lt;/span&gt;
+
+module.exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  mode: &lt;span class=&quot;token string&quot;&gt;&apos;development&apos;&lt;/span&gt;,
+  devtool: &lt;span class=&quot;token string&quot;&gt;&apos;cheap-module-eval-source-map&apos;&lt;/span&gt;,
+  entry: &lt;span class=&quot;token string&quot;&gt;&apos;./src/index.js&apos;&lt;/span&gt;,
+  output: &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    path: path.resolve&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;__dirname, &lt;span class=&quot;token string&quot;&gt;&apos;static/dist&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;,
+    filename: &lt;span class=&quot;token string&quot;&gt;&apos;[name].js&apos;&lt;/span&gt;,
+    chunkFilename: &lt;span class=&quot;token string&quot;&gt;&apos;[name].chunk.js&apos;&lt;/span&gt;,
+
+    // &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; you want hmr, point to webpack-dev-server path, not django static &lt;span class=&quot;token function&quot;&gt;file&lt;/span&gt;
+    publicPath: &lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;http://localhost:$&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;devServerPort&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/static/dist/&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;,
+  devServer: &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    contentBase: path.resolve&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;__dirname, &lt;span class=&quot;token string&quot;&gt;&apos;static/dist&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;,
+    compress: true,
+    port: process.env.DEV_SERVER_PORT &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;9000&lt;/span&gt;,
+    headers: &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&apos;Access-Control-Allow-Origin&apos;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;*&apos;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;,
+    historyApiFallback: true,
+
+    // HMR
+    hotOnly: true,
+    inline: true,
+    clientLogLevel: &lt;span class=&quot;token string&quot;&gt;&apos;warn&apos;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;,
+  plugins: &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    new ManifestPlugin&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      publicPath: &lt;span class=&quot;token string&quot;&gt;&apos;static/dist/&apos;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;,
+    new BundleTracker&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      filename: &lt;span class=&quot;token string&quot;&gt;&apos;./static/dist/webpack-stats.json&apos;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;4. django 模板&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;{% load custom_tags %} {% load render_bundle from webpack_loader %}
+&lt;span class=&quot;token doctype&quot;&gt;&amp;lt;!DOCTYPE html&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;html&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;{{ site.lang|default:&apos;zh-cn&apos; }}&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;head&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;meta&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;utf-8&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;meta&lt;/span&gt;
+      &lt;span class=&quot;token attr-name&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;viewport&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;
+      &lt;span class=&quot;token attr-name&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;width=device-width, initial-scale=1, shrink-to-fit=no&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;
+
+    {% block styles %} {% if is_prod %}
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;link&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;rel&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;stylesheet&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;href&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;{{ &apos;styles.css&apos; | get_manifest_asset }}&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;
+    {% endif %} {% endblock %}
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;head&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;body&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    {% block content %}
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;app&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    {% endblock %} {% block scripts %} {% if is_prod %}
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;script&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;{{ &apos;styles.js&apos; | get_manifest_asset }}&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token script&quot;&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;script&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;{{ &apos;main.js&apos; | get_manifest_asset }}&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token script&quot;&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    {% else %} {% render_bundle &apos;main&apos; %} {% endif %} {% endblock %}
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;body&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;html&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;实际项目中的演示：&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/images/django-webpack-hot-reload.jpg&quot; alt=&quot;django webpack热加载&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Mac 10.15 安装 libvips]]></title><description><![CDATA[gatsby 的图片处理库很方便，但是 sharp 依赖 c++编写的 。
 当 Mac 升级到 catalina(10.15), 安装时一直失败，当尝试源码编译，会出现依赖的错误。
 还有在 catalina…]]></description><link>https://iwisunny.github.io/2020-04-06/mac-catalina-install-libvips</link><guid isPermaLink="false">https://iwisunny.github.io/2020-04-06/mac-catalina-install-libvips</guid><pubDate>Mon, 06 Apr 2020 08:06:46 GMT</pubDate><content:encoded>&lt;p&gt;gatsby 的图片处理库&lt;code class=&quot;language-text&quot;&gt;sharp&lt;/code&gt;很方便，但是 sharp 依赖 c++编写的 &lt;code class=&quot;language-text&quot;&gt;libvips&lt;/code&gt;。
 当 Mac 升级到 catalina(10.15), &lt;code class=&quot;language-text&quot;&gt;brew&lt;/code&gt;安装时一直失败，当尝试源码编译，会出现&lt;code class=&quot;language-text&quot;&gt;tiff&lt;/code&gt;依赖的错误。
@@ -19,15 +117,16 @@ rm -rf node_modules
 npm i --unsafe-perm --build-from-source --verbose&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;改进之处&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;在 markdown 内引入 &lt;code class=&quot;language-text&quot;&gt;png&lt;/code&gt;图片，gatsby 会编译出错 (可能是 libvips 编译的参数不对， 或者&lt;code class=&quot;language-text&quot;&gt;gatsby-plugin-sharp&lt;/code&gt;的 bug)&lt;/li&gt;
-&lt;li&gt;用 yarn 安装可以 resolution 到 &lt;code class=&quot;language-text&quot;&gt;sharp: 0.24&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在 markdown 内引入 png 图片，gatsby 有时会编译出错 (可能是 libvips 编译的参数不对， 或者&lt;code class=&quot;language-text&quot;&gt;gatsby-plugin-sharp&lt;/code&gt;的 bug)&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;brew info vips&lt;/code&gt; 显示的 vips 版本始终是 8.8.x，尝试升级 brew，拉取&lt;code class=&quot;language-text&quot;&gt;brew/versions&lt;/code&gt;仓库也报错，可能是&lt;code class=&quot;language-text&quot;&gt;brew/core&lt;/code&gt;的 bug&lt;/li&gt;
+&lt;li&gt;等 brew 官方发新版，最简单的就是通过&lt;code class=&quot;language-text&quot;&gt;brew install vips&lt;/code&gt;安装 libvips&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;参考文档&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://sharp.pixelplumbing.com/install&quot;&gt;https://sharp.pixelplumbing.com/install&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&quot;&gt;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://github.com/gatsbyjs/gatsby/issues/21032&quot;&gt;https://github.com/gatsbyjs/gatsby/issues/21032&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google 搜索运算符]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2019-10-26-google-advanced-operators</link><guid isPermaLink="false">https://iwisunny.github.io/2019-10-26-google-advanced-operators</guid><pubDate>Sat, 26 Oct 2019 00:12:03 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google搜索算子]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2019-10-26-google-advanced-operators</link><guid isPermaLink="false">https://iwisunny.github.io/2019-10-26-google-advanced-operators</guid><pubDate>Sat, 26 Oct 2019 00:12:03 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
 &lt;p&gt;If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the anchor text on links to the page. For example, [ allinanchor: best museums sydney ] will return only pages in which the anchor text on links to the pages contain the words “best,” “museums,” and “sydney.”&lt;/p&gt;
 &lt;p&gt;Anchor text is the text on a page that is linked to another web page or a different place on the current page. When you click on anchor text, you will be taken to the page or place on the page to which it is linked. When using allinanchor: in your query, do not include any other search operators. The functionality of allinanchor: is also available through the Advanced Web Search page, under Occurrences.&lt;/p&gt;
 &lt;h2&gt;allintext:&lt;/h2&gt;
