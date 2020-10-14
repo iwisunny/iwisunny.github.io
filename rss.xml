@@ -1,4 +1,184 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[SunnyWang's RSS Feed]]></title><description><![CDATA[Every memo in web, sunnywang's blog]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 13 Oct 2020 17:49:49 GMT</lastBuildDate><item><title><![CDATA[gatsby page add pagination]]></title><description><![CDATA[gatsby 下分页的难点 gatsby 生成的都是静态网页，数据是通过 graphql 聚合的，这里查询数据不像传统的关系型数据库那样
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[SunnyWang's RSS Feed]]></title><description><![CDATA[Every memo in web, sunnywang's blog]]></description><link>https://iwisunny.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 14 Oct 2020 03:23:40 GMT</lastBuildDate><item><title><![CDATA[javascript vs webassembly fibonacci benchmark]]></title><description><![CDATA[Rust 环境准备 我准备用来编译到，当然你也可以用 , ,  来 compile 到 wasm. 首选准备 rust 环境，安装 创建 rust lib，编译到 wasm 使用 cargo(rust 的包管理器和 build 工具) 创建一个 type 为 library…]]></description><link>https://iwisunny.github.io/2020-10-14/js-wasm-fibonacci-compare</link><guid isPermaLink="false">https://iwisunny.github.io/2020-10-14/js-wasm-fibonacci-compare</guid><pubDate>Wed, 14 Oct 2020 02:31:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;img src=&quot;/images/js-wasm-bench.png&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;Rust 环境准备&lt;/h2&gt;
+&lt;p&gt;我准备用&lt;code class=&quot;language-text&quot;&gt;rust&lt;/code&gt;来编译到&lt;code class=&quot;language-text&quot;&gt;wasm&lt;/code&gt;，当然你也可以用 &lt;code class=&quot;language-text&quot;&gt;c/c++&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;go&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;assemblyScript/typescript&lt;/code&gt; 来 compile 到 wasm.&lt;/p&gt;
+&lt;p&gt;首选准备 rust 环境，安装&lt;code class=&quot;language-text&quot;&gt;rustup&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;curl --proto &amp;#39;=https&amp;#39; --tlsv1.2 https://sh.rustup.rs -sSf | sh
+
+export PATH=&amp;quot;$HOME/.cargo/bin:$PATH&amp;quot;
+
+# 检查rustc 安装成功
+rustc --version
+# 检查 cargo 安装成功
+cargo --version
+
+# 安装wasm的编译目标
+rustup target add wasm32-unknown-unknown&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;创建 rust lib，编译到 wasm&lt;/h2&gt;
+&lt;p&gt;使用 cargo(rust 的包管理器和 build 工具) 创建一个 type 为 library 的项目&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;cargo new begin_wasm --lib&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;cargo 初始化的目录结构是&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;├── Cargo.toml
+└── src
+    └── lib.rs&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;src/lib.rs&lt;/code&gt;就是要编译到 wasm 的 rust 文件，先加入斐波那契数的函数，稍后编译到 wasm 里。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;rust&quot;&gt;&lt;pre class=&quot;language-rust&quot;&gt;&lt;code class=&quot;language-rust&quot;&gt;&lt;span class=&quot;token attribute attr-name&quot;&gt;#[no_mangle]&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; u32&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;-&gt;&lt;/span&gt; u64 &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;match&lt;/span&gt; n &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        _ &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;编译到 wasm&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;cargo build --target wasm32-unknown-unknown&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这时在项目目录下会多出一个&lt;code class=&quot;language-text&quot;&gt;target&lt;/code&gt;目录，默认 cargo 是在 debug 模式下编译，wasm 文件体积会稍大点。
+生成的 wasm 文件在 &lt;code class=&quot;language-text&quot;&gt;target/wasm32-unknwon-unknown/debug/begin_wasm.wasm&lt;/code&gt;&lt;/p&gt;
+&lt;h2&gt;JS 端创建测试页面&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;touch index.html&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;index.html 的内容如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;token doctype&quot;&gt;&amp;lt;!DOCTYPE html&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;html&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;head&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;title&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;rust wasm&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;title&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;head&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;body&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;h2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;Fibnacci benchmark: JS vs Wasm&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;h2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;result&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+      &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;fib-js&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+
+      &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;fib-wasm&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token script&quot;&gt;&lt;span class=&quot;token language-javascript&quot;&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; wasm_file &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;target/wasm32-unknown-unknown/debug/begin_wasm.wasm&quot;&lt;/span&gt;
+
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; n &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;n &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; t1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; res_js &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;40&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; t2 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+      document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&quot;fib-js&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;innerHTML &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;==JS==: Calc fib(40), time=&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;t2 &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; t1&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+        &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;s, res=&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;res_js&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; memory &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;WebAssembly&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Memory&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; initial&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; maximum&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;100&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// alloc wasm memory size&lt;/span&gt;
+
+      WebAssembly&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;instantiateStreaming&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;wasm_file&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        js&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; mem&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; memory &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;mod&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; wasm_exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; mod&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;instance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports
+
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; t1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; res_wasm &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; wasm_exports&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;40&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; t2 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+        document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;fib-wasm&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;innerHTML &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;==WASM==: Calc fib(40), time=&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;t2 &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; t1&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+          &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;s, res=&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;res_wasm&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;body&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;html&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;html&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;html&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;开启本地 http server&lt;/h2&gt;
+&lt;p&gt;本地测试的话，可以有很多方式开启 http server，你可以用 cargo 安装 rust 版的 http server&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;cargo install https
+
+http  # 启动http server&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;也可以 nodejs 的 npm 安装 http server&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shellscript&quot;&gt;&lt;pre class=&quot;language-shellscript&quot;&gt;&lt;code class=&quot;language-shellscript&quot;&gt;npm i http-server
+
+http-server .&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后打开浏览器(比如我的 chrome)，进到测试页面, benchmark 对比：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/js-wasm-fib.jpg&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;总结&lt;/h2&gt;
+&lt;p&gt;以上是对比 js 和 wasm 计算 斐波那契数列的第 42 项，也是很大的一个数了，js 用的时间竟然比 wasm 少?（什么原因呢，各位观众可以在评论区留言发表看法:-p）
+wasm 的性能和 c/c++差不多，这里应该是 chrome v8 引擎在处理 js 的计算时做了编译优化，让 js 计算 fib(42) 甚至比 wasm 还快。&lt;/p&gt;
+&lt;p&gt;当然局部的 benchmark 对比看不出什么优势，在重计算的项目(cpu 密集型)中，wasm 的优势就会比 js 明显。&lt;/p&gt;
+&lt;p&gt;未来 WASM 会和 JS 优势互补，二者不是对立的关系，wasm 也不会取代 js，wasm 只是增强了 js，就像 typescript 只是给 js 加了类型和静态分析。&lt;/p&gt;
+&lt;p&gt;很愉快的 WASM 之旅，happy coding :)&lt;/p&gt;</content:encoded></item><item><title><![CDATA[styled-components add media query]]></title><description><![CDATA[Media query 在下的使用，和普通 css 下是一样的，只是 styled-components 支持 SCSS 的语法
+，另外可以在 es6 的模板字符串(tagged template)下有独特的写法。  传统的写法 styled-components…]]></description><link>https://iwisunny.github.io/2020-10-14/styled-components-add-media-query</link><guid isPermaLink="false">https://iwisunny.github.io/2020-10-14/styled-components-add-media-query</guid><pubDate>Wed, 14 Oct 2020 01:36:00 GMT</pubDate><content:encoded>&lt;p&gt;Media query 在&lt;code class=&quot;language-text&quot;&gt;styled-components&lt;/code&gt;下的使用，和普通 css 下是一样的，只是 styled-components 支持 SCSS 的语法
+，另外可以在 es6 的模板字符串(tagged template)下有独特的写法。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/styled-comp-scss.jpeg&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;传统的写法&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;#wrapper {
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;styled-components 下的写法&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; styled &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;styled-components&quot;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; Wrapper &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; styled&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;div&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;styled-component 下的 scss 写法&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; Article &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; styled&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;div&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;
+  &gt; h3 {
+    margin-bottom: 1rem;
+    &gt; a {
+      text-decoration: none;
+    }
+  }
+  
+  .snapshots{
+    display: flex;
+    
+    &gt; img {
+      @media (min-width: 1024px} {
+        width: 30%;        
+      }
+    }
+  }
+&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;styled.div&lt;/code&gt; 后面接的是 模板字符串，可以插值(interpolate)，所以可以把不同分辨率的配置抽出来：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// config/device-size.js&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; size &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  mobile&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;425px&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  tablet&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;768px&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  desktop&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;1024px&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; device &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  mobile&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;(max-width: &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;size&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;mobile&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  tablet&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;(min-width: &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;size&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;tablet&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;) and (max-width: &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;size&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;desktop&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  desktop&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;(min-width: &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;size&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;desktop&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最终的 styled-components media query 写法&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; Article &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;styled&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Card&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;
+  &gt; h3 {
+    margin-bottom: 1rem;
+    &gt; a {
+      text-decoration: none;
+    }
+  }
+
+  .snapshots {
+    display: flex;
+
+    &gt; img {
+      @media &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;device&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;desktop&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; {
+        width: 30%;
+      }
+    }
+  }
+&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[gatsby page add pagination]]></title><description><![CDATA[gatsby 下分页的难点 gatsby 生成的都是静态网页，数据是通过 graphql 聚合的，这里查询数据不像传统的关系型数据库那样
 直接通过, 来控制分页数据。gatsby 的数据源可能是每个 markdown 经过 nodejs 转换后的纯 json…]]></description><link>https://iwisunny.github.io/2020-10-13/gatsby-add-pagination</link><guid isPermaLink="false">https://iwisunny.github.io/2020-10-13/gatsby-add-pagination</guid><pubDate>Tue, 13 Oct 2020 14:20:48 GMT</pubDate><content:encoded>&lt;h2&gt;gatsby 下分页的难点&lt;/h2&gt;
 &lt;p&gt;gatsby 生成的都是静态网页，数据是通过 graphql 聚合的，这里查询数据不像传统的关系型数据库那样
 直接通过&lt;code class=&quot;language-text&quot;&gt;limit&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;offset&lt;/code&gt;来控制分页数据。gatsby 的数据源可能是每个 markdown 经过 nodejs 转换后的纯 json，
@@ -135,7 +315,7 @@
   }
 &lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;最终的效果如图：
-&lt;img src=&quot;/images/gatsby-pagination.jpg&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[docker hyperkit进程cpu占用超过100%]]></title><description><![CDATA[解决方法很简单： 在 设置里，把 cpu 调成 1 核。 这样  后续 cpu 占用不会超过 100%]]></description><link>https://iwisunny.github.io/2020-05-06/docker-hyperkit-cpu-very-high</link><guid isPermaLink="false">https://iwisunny.github.io/2020-05-06/docker-hyperkit-cpu-very-high</guid><pubDate>Wed, 06 May 2020 19:26:46 GMT</pubDate><content:encoded>&lt;p&gt;解决方法很简单： 在&lt;code class=&quot;language-text&quot;&gt;docker desktop&lt;/code&gt; 设置里，把 cpu 调成 1 核。&lt;/p&gt;
+&lt;img src=&quot;/images/gatsby-pagination.jpg&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[docker hyperkit进程cpu占用超过100%]]></title><description><![CDATA[解决方法很简单： 在 设置里，把 cpu 调成 1 核。 这样  后续 cpu 占用不会超过 100%]]></description><link>https://iwisunny.github.io/2020-05-06/docker-hyperkit-cpu-very-high</link><guid isPermaLink="false">https://iwisunny.github.io/2020-05-06/docker-hyperkit-cpu-very-high</guid><pubDate>Wed, 06 May 2020 11:26:00 GMT</pubDate><content:encoded>&lt;p&gt;解决方法很简单： 在&lt;code class=&quot;language-text&quot;&gt;docker desktop&lt;/code&gt; 设置里，把 cpu 调成 1 核。&lt;/p&gt;
 &lt;p&gt;这样 &lt;code class=&quot;language-text&quot;&gt;com.docker.hyperkit&lt;/code&gt; 后续 cpu 占用不会超过 100%&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/docker-cpu.jpg&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Be a productive team member]]></title><description><![CDATA[天赋可以让你赢得比赛，但是团队合作与智慧可以让你赢得总冠军 -- michael jordan…]]></description><link>https://iwisunny.github.io/2020-04-08/be-a-productive-team-member</link><guid isPermaLink="false">https://iwisunny.github.io/2020-04-08/be-a-productive-team-member</guid><pubDate>Wed, 08 Apr 2020 11:11:46 GMT</pubDate><content:encoded>&lt;blockquote&gt;
 &lt;p&gt;天赋可以让你赢得比赛，但是团队合作与智慧可以让你赢得总冠军 -- michael jordan&lt;/p&gt;
@@ -279,7 +459,7 @@ npm i --unsafe-perm --build-from-source --verbose&lt;/code&gt;&lt;/pre&gt;&lt;/d
 &lt;li&gt;&lt;a href=&quot;https://sharp.pixelplumbing.com/install&quot;&gt;https://sharp.pixelplumbing.com/install&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&quot;&gt;https://libvips.github.io/libvips/install.html#building-libvips-from-a-source-tarball&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://github.com/gatsbyjs/gatsby/issues/21032&quot;&gt;https://github.com/gatsbyjs/gatsby/issues/21032&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google search operator]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2019-10-26-google-advanced-operators</link><guid isPermaLink="false">https://iwisunny.github.io/2019-10-26-google-advanced-operators</guid><pubDate>Sat, 26 Oct 2019 00:12:03 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[google search operator]]></title><description><![CDATA[allinanchor: If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the…]]></description><link>https://iwisunny.github.io/2019-10-26-google-advanced-operators</link><guid isPermaLink="false">https://iwisunny.github.io/2019-10-26-google-advanced-operators</guid><pubDate>Sat, 26 Oct 2019 04:03:00 GMT</pubDate><content:encoded>&lt;h2&gt;allinanchor:&lt;/h2&gt;
 &lt;p&gt;If you start your query with allinanchor:, Google restricts results to pages containing all query terms you specify in the anchor text on links to the page. For example, [ allinanchor: best museums sydney ] will return only pages in which the anchor text on links to the pages contain the words “best,” “museums,” and “sydney.”&lt;/p&gt;
 &lt;p&gt;Anchor text is the text on a page that is linked to another web page or a different place on the current page. When you click on anchor text, you will be taken to the page or place on the page to which it is linked. When using allinanchor: in your query, do not include any other search operators. The functionality of allinanchor: is also available through the Advanced Web Search page, under Occurrences.&lt;/p&gt;
 &lt;h2&gt;allintext:&lt;/h2&gt;
@@ -362,7 +542,7 @@ npm i --unsafe-perm --build-from-source --verbose&lt;/code&gt;&lt;/pre&gt;&lt;/d
 &lt;p&gt;If you include source: in your query, Google News will restrict your search to articles from the news source with the ID you specify. For example, [ election source:new&lt;em&gt;york&lt;/em&gt;times ] will return articles with the word “election” that appear in the New York Times.&lt;/p&gt;
 &lt;p&gt;To find a news source ID, enter a query that includes a term and the name of the publication you’re seeking. You can also specify the publication name in the “news source” field in the Advanced News Search form. You’ll find the news source ID in the query box, following the source: search operator. For example, let’s say you enter the publication name Ha’aretz in the News Source box, then you click the Google Search button. The results page appears, and its search box contains [ peace source:ha&lt;em&gt;aretz__subscription&lt;/em&gt; ]. This means that the news source ID is ha&lt;em&gt;aretz__subscription&lt;/em&gt;. This query will only return articles that include the word “peace” from the Israeli newspaper Ha’aretz.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[From jekyll to gatsby]]></title><description><![CDATA[While hosting personal site on github pages, jekyll is fine.
 But nowadays static site generator like  is more popular which
-is based on the…]]></description><link>https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby</link><guid isPermaLink="false">https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby</guid><pubDate>Sat, 31 Aug 2019 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;While hosting personal site on github pages, jekyll is fine.
+is based on the…]]></description><link>https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby</link><guid isPermaLink="false">https://iwisunny.github.io/2019-08-31-from-jekyll-to-gatsby</guid><pubDate>Sat, 31 Aug 2019 14:12:00 GMT</pubDate><content:encoded>&lt;p&gt;While hosting personal site on github pages, jekyll is fine.
 But nowadays static site generator like &lt;code class=&quot;language-text&quot;&gt;GatsbyJs&lt;/code&gt; is more popular which
 is based on the fantastic &lt;code class=&quot;language-text&quot;&gt;React&lt;/code&gt;, also my favorite language is &lt;code class=&quot;language-text&quot;&gt;javascript&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;So shifting from jekyll to gatsby seems a win-win step.&lt;/p&gt;
@@ -372,7 +552,7 @@ is based on the fantastic &lt;code class=&quot;language-text&quot;&gt;React&lt;/
 &lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/&quot;&gt;GatsbyJs&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;How to Deploy a GatsbyJS Blog on GitHub Pages as a User Site&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content:encoded></item><item><title><![CDATA[life is a state of mind]]></title><description><![CDATA[The subject of this article you are about to read reveals a crucial secret of your life.
-It concerns a subject that is liable to make…]]></description><link>https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind</link><guid isPermaLink="false">https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind</guid><pubDate>Sun, 25 Oct 2015 00:12:03 GMT</pubDate><content:encoded>&lt;blockquote&gt;
+It concerns a subject that is liable to make…]]></description><link>https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind</link><guid isPermaLink="false">https://iwisunny.github.io/2015-10-25-life-is-a-state-of-mind</guid><pubDate>Sun, 25 Oct 2015 04:03:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;
 &lt;p&gt;The subject of this article you are about to read reveals a crucial secret of your life.
 It concerns a subject that is liable to make fundamental changes in your outlook on the material world.
 The content of this article is not just a different approach, or a philosophical thought.&lt;/p&gt;
@@ -416,7 +596,8 @@ The content of this article is not just a different approach, or a philosophical
 是谁看到了，谁触摸到了，闻到了，感觉到了。。？是谁在思考，推断，和感觉到“我是我”？我们这个年代一些重要领域的思考也最终指向了这个问题。
 The ghost in the machine, the small man in the small man ，“我”在哪里？谁在用我的“意识”？谁意识到了“意识”本身？我们在寻找谁看见了这一切。
 实际上， 形而上存在一个东西能够看到听到，那就是灵魂(Soul)，我们所认为的现实世界，是灵魂看见听见的集合。就像梦中我们的身体和感知的世界不是真实存在的一样，
-我们身处的宇宙也不是真实存在的，也不是物理的实在，唯一真实存在的，是灵魂。事物只是灵魂的感知，物理，化学和生物的法则都指向一个结论---人的存在是幻觉。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[why the night sky is dark]]></title><description><![CDATA[…]]></description><link>https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark</link><guid isPermaLink="false">https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark</guid><pubDate>Thu, 09 Apr 2015 00:12:03 GMT</pubDate><content:encoded>&lt;blockquote&gt;
+我们身处的宇宙也不是真实存在的，也不是物理的实在，唯一真实存在的，是灵魂。事物只是灵魂的感知，物理，化学和生物的法则都指向一个结论---人的存在是幻觉。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[why the night sky is dark]]></title><description><![CDATA[…]]></description><link>https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark</link><guid isPermaLink="false">https://iwisunny.github.io/2015-04-09-why-the-night-sky-is-dark</guid><pubDate>Thu, 09 Apr 2015 04:03:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;img src=&quot;/images/galaxy.jpg&quot;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
 &lt;p&gt;夜空总给我一种神秘的感觉，似乎要告诉我什么，像一位睿智的老者、默默的友人……
 当你仰望它时内心有莫名的平静……
 宇宙中的问题没有简单与复杂的区分，简单与复杂这些形容词，都掺杂了人的主观情感……&lt;/p&gt;
